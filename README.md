@@ -1,0 +1,20 @@
+# 20221122_ROC_curve_of_pvalue_after_cutoff
+
+# ファイルの説明
+
+・20221108_correlation_analysis_between_levels_of_RBP_and_miRNA_with_excluding_outlier.R
+410のRBPと377のmiRNAの発現量について相関解析をおこなうスクリプト。ある細胞株のRBPあるいはmiRNAの発現量が0の場合、それらにそれぞれの発現量の最小値を代入する。
+また、それぞれの発現量の外れ値(箱ひげ図で用いる方法と同様。第一四分数-四分位数×1.5または第三四分数+四分位数*1.5)をもつ細胞株を除く。用いたデータはスクリプト内に記載。
+
+・summary_of_correlaiton_between_RBP_level_and_miRNA_level_with_excluding_outlier.txt
+"20221108_correlation_analysis_between_levels_of_RBP_and_miRNA_with_excluding_outlier.R"で生成された結果。
+
+・20221122_ROC_curve_of_pvalue_after_cutoff.R
+"20221108_correlation_analysis_between_levels_of_RBP_and_miRNA_with_excluding_outlier.R"で作成した結果と物理的相互作用のリスト(スクリプト内に記載)を用いて、
+物理的相互作用のリストでスコアが3より大きいものを陽性・それ以外を陰性をし、細胞株数にカットオフを設定した後、p値に対してROC曲線を描くスクリプト。
+このスクリプトでは、例えば、相互作用のリストでlet-7a-1/let-7a-2がLIN28Aとそれぞれ異なるスコアをもつとき、相関解析の結果とマージする際にどちらかの情報が消えてしまう。
+
+・20221129_ROC_curve_of_pvalue_after_cutoff_revised.R
+"20221122_ROC_curve_of_pvalue_after_cutoff.R"を改良したスクリプト。例えば、相互作用のリストでlet-7a-1/let-7a-2がLIN28Aとそれぞれ異なるスコアをもつとき、
+相関解析の結果とマージする際に両方の情報が消えないように、重複した組み合わせをもたせるようにした。また、ROC曲線にアタリ(スコアが3より大きい)とハズレ(スコアが3以下)の数を表示するようにした。
+
