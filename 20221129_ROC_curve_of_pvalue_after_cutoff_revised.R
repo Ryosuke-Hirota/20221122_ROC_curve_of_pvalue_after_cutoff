@@ -17,9 +17,8 @@ c.result <-c.result[,-2]
 colnames(c.result)[1] <-"combination"
 
 # Import list of physical interaction
-# This list is located at "https://github.com/Ryosuke-Hirota/20221017_ROC_curve_with_list_of_functional_or_physical_interactions"
+# This list is located at "https://github.com/Ryosuke-Hirota/20221122_ROC_curve_of_pvalue_after_cutoff"
 # Attention : this list is made by pri-miRNA. Thus, when you correspond this list to the correlation analysis using mature miRNA, duplicated rows appear. 
-# For example, let-7a-1 and let-7a-3 in treiber's list are
 setwd("C:/Rdata/20221129_ROC_curve_of_pvalue_after_cutoff_revised")
 phy.list <-read.table("list_of_treiber_physical_interaction_with_not_considering_primary_transcript.txt",sep="\t",header = T,stringsAsFactors = F)
 
@@ -27,7 +26,6 @@ phy.list <-read.table("list_of_treiber_physical_interaction_with_not_considering
 phy.list[,5] <-paste0(phy.list[,3],"_vs_",phy.list[,2])
 colnames(phy.list)[5] <-"combination"
 phy.list <-phy.list[,c(5,4,1)]
-
 
 # merge correlation analysis result and list of physical interaction
 merge.df <-merge(c.result,phy.list,by="combination",all=T)
