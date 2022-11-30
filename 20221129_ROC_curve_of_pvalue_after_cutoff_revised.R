@@ -1,5 +1,6 @@
 # this script is to draw ROC curve with number of combination with/without physical interaction
-# made by hirota 2022/11/29
+# 2022/11/29 made
+# 2022/11/30 revised
 
 setwd("C:/Rdata")
 dir.create("20221129_ROC_curve_of_pvalue_after_cutoff_revised")
@@ -19,32 +20,33 @@ colnames(c.result)[1] <-"combination"
 # This list is located at "https://github.com/Ryosuke-Hirota/20221017_ROC_curve_with_list_of_functional_or_physical_interactions"
 # Attention : this list is made by pri-miRNA. Thus, when you correspond this list to the correlation analysis using mature miRNA, duplicated rows appear. 
 # For example, let-7a-1 and let-7a-3 in treiber's list are
-setwd("C:/Rdata/20221017_ROC_curve_for_cutoff_with_functional_interactions")
-phy.list <-read.table("list_of_treiber_physical_interaction_between_RBP_and_miRNA.txt",sep="\t",header = T,stringsAsFactors = F)
+setwd("C:/Rdata/20221129_ROC_curve_of_pvalue_after_cutoff_revised")
+phy.list <-read.table("list_of_treiber_physical_interaction_with_not_considering_primary_transcript.txt",sep="\t",header = T,stringsAsFactors = F)
 
 # edit list of physical interaction 
-phy.list[,1] <-paste0(phy.list[,4],"_vs_",phy.list[,2])
-phy.list <-phy.list[,c(1,5)]
-colnames(phy.list)[1] <-"combination"
+phy.list[,5] <-paste0(phy.list[,3],"_vs_",phy.list[,2])
+colnames(phy.list)[5] <-"combination"
+phy.list <-phy.list[,c(5,4,1)]
+
 
 # merge correlation analysis result and list of physical interaction
 merge.df <-merge(c.result,phy.list,by="combination",all=T)
 merge.df <-subset(merge.df,!is.na(merge.df[,2]))
 
 # annotate whether treiber's combinations match with CCLE correlation analysis result
-merge.df[!is.na(merge.df[,5]),6] <-"match"
-merge.df[is.na(merge.df[,5]),6] <-"not_match"
-colnames(merge.df)[6] <-"match_with_CCLE"
+merge.df[!is.na(merge.df[,5]),7] <-"match"
+merge.df[is.na(merge.df[,5]),7] <-"not_match"
+colnames(merge.df)[7] <-"match_with_CCLE"
 merge.df[,5] <-ifelse(is.na(merge.df[,5]),0,merge.df[,5])
 
 # check number of combinations with/without physical interaction
-# 353(unique:332) treiber's combinations with physical interaction(score>3) are matched with CCLE correlation analysis result
-# 4097(unique:3281) treiber's combinations without physical interaction(score<=3) are matched with CCLE correlation analysis result
-phy <-merge.df[merge.df[,5]>3,1]
+# 454(unique:431) treiber's combinations with physical interaction(score>3) are matched with CCLE correlation analysis result
+# 5760(unique:4420) treiber's combinations without physical interaction(score<=3) are matched with CCLE correlation analysis result
+phy <-merge.df[merge.df[,5]>3&merge.df[,7]=="match",1]
 phy <-phy[-1]
 length(unique(phy))
 
-no.phy <-merge.df[merge.df[,5]<=3&merge.df[,6]=='match',1]
+no.phy <-merge.df[merge.df[,5]<=3&merge.df[,7]=='match',1]
 no.phy <-no.phy[-1]
 length(unique(no.phy))
 
@@ -55,20 +57,20 @@ setwd("C:/Rdata/20221129_ROC_curve_of_pvalue_after_cutoff_revised")
 
 # draw ROC curve
 for (i in 1:length(cutoff)) {
-  # remove NA rows
+  
   result <-merge.df
   
-  # annotate postive and negative by physical interaction
-  result[result[,5]>3,7] <-1
-  result[result[,5]<=3,7] <-0
-  colnames(result)[7] <-"physical_interaction"
+  # annotate positive and negative by physical interaction
+  result[result[,5]>3,8] <-1
+  result[result[,5]<=3,8] <-0
+  colnames(result)[8] <-"physical_interaction"
   
   # cutoff number of cell line
   result <-result[result[,4]>=cutoff[i],]
   
   # count number of combinations with/without physical interaction
   # caution : this number is duplicated. If you wanna know non-duplicated number, write additional script.
-  count <-as.data.frame(table(result[,6],result[,7]))
+  count <-as.data.frame(table(result[,7],result[,8]))
   p <-count[3,3]
   np <-count[1,3]
   
