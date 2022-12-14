@@ -1,9 +1,9 @@
-# this script is to draw plot of correlation analysis between expression level of 410 RBP and 377 miRNA with excluding outliers
+# this script is to draw plot of correlation analysis between expression level of 410 RBP and 377 miRNA with excluding outlier
 # 2022/12/06 made
 
 library(ggplot2)
 
-# inport table about expression levels of RBPs and miRNAs
+# import table about expression levels of RBPs and miRNAs
 # these tables are located at "\\fsw-q02\okamura-lab\Files_related_to_M1_Projects\Hirota\CCLE_Data"
 setwd("C:/Rdata/CCLE_data")
 RBP.df <-read.table("RNAseq_of_RBP.txt",sep="\t",header = T,stringsAsFactors = F)
@@ -12,7 +12,7 @@ RBP.df <-RBP.df[,c(2:411,1,412)]
 miRNA.df <-read.table("CCLE_miRNAseq.txt",sep="\t",header = T,stringsAsFactors = F,check.names = F)
 miRNA.df <-miRNA.df[,c(2:378,1,379)]
 
-# set function for caluculating minimum value of expression level
+# set function for calculating minimum value of expression level
 find.min <-function(x,y){
   for (i in 1:y) {
     m <-x[x[,i]!=0,i]
@@ -29,7 +29,7 @@ find.min <-function(x,y){
 r.min <-find.min(RBP.df,410)
 m.min <-find.min(miRNA.df,377)
 
-# set function for caluculating outlier
+# set function for calculating outlier
 ex.outlier <-function(x,y){
   q <-as.numeric(quantile(x[,y]))
   iqr <-IQR(x[,y])
@@ -69,7 +69,7 @@ for (i in 1:410) {
     RBP.miRNA[,1] <-log2(RBP.miRNA[,1])
     RBP.miRNA[,2] <-log2(RBP.miRNA[,2])
     
-    # investigate each outlier 
+    # investigate each outlier
     r.outlier <-ex.outlier(RBP.miRNA,1)
     m.outlier <-ex.outlier(RBP.miRNA,2)
     
@@ -84,7 +84,7 @@ for (i in 1:410) {
     # column of Site_Primary as factor 
     RBP.miRNA[,4] <-as.factor(RBP.miRNA[,4])
     
-    # calculate correaltion coeffient
+    # calculate correlation coefficient
     r <-cor.test(RBP.miRNA[,1],RBP.miRNA[,2],method = "pearson")
 
     # write summary
@@ -105,7 +105,7 @@ sm <-sm[,-7]
 setwd("C:/Rdata/20221108_correlaiton_between_RBP_level_and_miRNA_level_with_excluding_outlier")
 write.table(sm,"summary_of_correlaiton_between_RBP_level_and_miRNA_level_with_excluding_outlier_and_considering_no_expression.txt",sep="\t",row.names = F,quote = F)
 
-###
+#### script for drawing plot
 dir.create(colnames(RBP.miRNA)[1])
 setwd(paste0("C:/Rdata/20221108_correlaiton_between_RBP_level_and_miRNA_level_with_excluding_outlier/",colnames(RBP.miRNA)[1]))
 
